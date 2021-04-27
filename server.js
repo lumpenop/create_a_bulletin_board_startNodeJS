@@ -1,34 +1,105 @@
-const express = require('express'); // express 객체 생성
-const app = express(); // express 객체를 app에 담는다
-const port = 3000; // 포트 번호
+require('dotenv').config();
+const express = require('express');
+const nunjucks = require('nunjucks');
+const mysql = require('mysql');
+const port = process.env.SERVER_PORT;
+
+const app = express();
+app.use(express.urlencoded());
+app.set('view engine', 'html');
+
+nunjucks.configure('views' , {
+    express:app,
+    autoescape:true,
+});
+
+let connection = mysql.createConnection({ // mysql을 연결하여 database를 객체로 담는다
+    host:'localhost',
+    user:'root',
+    password:'1234',
+    database:'node1',
+});
+
+connection.connect();
+app.get('/', (req, res)=>{
+                                            // results는 배열 내에 객체가 있는 형태
+    connection.query("select * from user", (error, results)=>{
+        if(error){
+            console.log('error');
+        } else {
+            console.log(results);
+            results.forEach(ele=>{
+                console.log(ele.username,ele.userid,ele.userpw,ele.gender);
+            })
+        }
+    })
+    
+    res.render('index.html' ,{
+        title:'na',
+    })
+});
 
 
-// 요청을 이벤트로 받아서 처리함
-// app.get()은 url의 변동에 대한 이벤트
-// app.get()의 매개변수
-// 1. 경로 '/' => localhost:3000
-// 2. 콜백함수(요청, 응답) => {}
-//      요청:url, 응답:응답.send('응답');
+app.get('/join', (req, res)=>{
+                                        
+    res.render('join.html' ,{
+      
+    })
 
-app.get('/', (요청, 응답)=>{
-     응답.send('helloworld');
+});
+
+app.get('/login', (req, res)=>{
+                                        
+    res.render('login.html' ,{
+        
+    })
+});
+
+app.post('/main', (req, res)=>{
+                                        
+    res.render('main.html' ,{
+        id:req.body.userid,
+    })
+});
+
+
+
+app.post('/join', (req, res)=>{
+    console.log(req.body)
+    let params = [req.body.userid, req.body.userpw, req.body.username, req.body.gender];
+    const id = req.body.userid;
+    const name = req.body.username;
+    const password = req.body.userpw;
+    connection.query("insert into user values(?,?,?,?)", params , (error, results)=>{
+        if(error){
+            console.log('error');
+        } else {
+           
+            res.render('login.html', {
+                id:req.body.userid,
+                name: req.body.userbody,
+                password : req.body.userpw,
+            })
+        }
+    })
 })
 
-app.get('/hello', (요청, 응답)=>{
-    응답.send('helloworld');
+app.post('/login', (req, res)=>{
+    console.log(req.body.userid,req.body.userpw);
 })
 
 app.listen(port, ()=>{
-    console.log(`server is listening at localhost ${port}`);
-})
+    console.log(`server start port:${port}`);
+});
 
-// app 객체에서 listen()메서드 호출
-// listen()에는 2가지 매개변수 : 1. port 번호, 2. 실행 시 rollback 함수
 
-// 서버 수정 후에는 종료 후 재실행 해야 적용됨
+/* 과제 *
 
-// npm init 후 끝까지 엔터
-// npm install express 
-// node server.js 로 서버 실행
-// localhost:3000 서버 접속
-// ctrl + c 로 접속 종료
+1.auto increment - 자동으로 1씩 증가하는 제약조건
+2.limit 기능 - limit 뒤의 수가 1개일 때는 1번 부터 숫자 만큼, 2개일 때는 a번 부터 ~ b 번째 까지 조회
+3.type조사 - int(n): 숫자(n byte) , varchar(n):가변 문자열(n byte), text:긴 문자열, enum:해당 집합 내의 데이터만 받는 데이터 타입,
+4.not null - null이 없어야하는 제약조건
+5.%기능 - % % 사이의 문자에 해당하는 데이터 조회
+6.primary key - 기본 키 제약조건으로 not null과 unique key 제약 조건을 포함, 테이블 내에서 유일한 식별자로 사용, 다른 테이블에서 foreign key로 사용하여 참조 가능
+
+*/

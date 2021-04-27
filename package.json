@@ -1,25 +1,22 @@
 {
-  "name": "start_nodejs",
+  "name": "node2",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/lumpenop/start_nodeJS.git"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/lumpenop/start_nodeJS/issues"
-  },
-  "homepage": "https://github.com/lumpenop/start_nodeJS#readme",
   "dependencies": {
     "body-parser": "^1.19.0",
+<<<<<<< HEAD
     "express": "^4.17.1",
+=======
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "mysql": "^2.18.1",
+>>>>>>> 8cb3b0354bd614abf0c1e4a010718d55dbc1b0b0
     "nunjucks": "^3.2.3"
   }
 }
